@@ -1,0 +1,32 @@
+---
+maps:
+  - name: testing
+    folder_name: "ExampleMap1"
+    survivor_spawn:
+      x: -1
+      y: 1
+      z: -1
+    killer_spawn:
+      x: 0
+      y: 1
+      z: 6
+    stages:
+      - name: ohio
+        time: 15
+        activate:
+          pos:
+            x: -4
+            y: 2
+            z: -16
+          type: "BUTTON" # BUTTON / TOUCH
+        door:
+          start_pos:
+            x: -3
+            y: 2
+            z: -17
+          end_pos:
+            x: 0
+            y: 1
+            z: -17
+
+
