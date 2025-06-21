@@ -116,7 +116,7 @@ public class Arena {
             ItemStack sword = new ItemStack(Material.IRON_SWORD);
             ItemMeta itemMeta = sword.getItemMeta();
             itemMeta.displayName(Component.text("西瓜刀").color(NamedTextColor.RED));
-            ArrayList<Component> lore = new ArrayList<Component>();
+            ArrayList<Component> lore = new ArrayList<>();
             lore.add(Component.text("拼夕夕上面9.99包郵的西瓜刀"));
             lore.add(Component.text("看起來十分銳利，實際上它一點也不銳利"));
             lore.add(Component.text("美國製造 中國生產"));
@@ -248,7 +248,7 @@ public class Arena {
                 }
             }.runTaskTimer(plugin, 0L, 20L);
         } else {
-            plugin.getLogger().warning(String.format("Position Mismatch, Activate Position: %s,%s,%s | Require Position: %s", Activate_X, Activate_Y, Activate_Z, InteractBlockPosition.toString()));
+            plugin.getLogger().warning(String.format("Position Mismatch"));
         }
 
     }
@@ -325,7 +325,7 @@ public class Arena {
         if (killers.get(Player.getUniqueId()) != null) {
             // Player Is Killer
             if (killers.size() - 1 <= 0) {
-                UnexpectedStop(ChatColor.RED + "殺手人數不足","殺手人數不足導致遊戲無法正常進行，已強制結束");
+                UnexpectedStop(NamedTextColor.RED + "殺手人數不足","殺手人數不足導致遊戲無法正常進行，已強制結束");
                 Stop();
             }
             killers.remove(Player.getUniqueId());
@@ -333,7 +333,7 @@ public class Arena {
         if (survivors.get(Player.getUniqueId()) != null) {
             // Player Is Survivors
             if (survivors.size() - 1 <= 0) {
-                UnexpectedStop(ChatColor.RED + "逃亡者不足","逃亡者人數不足導致遊戲無法正常進行，已強制結束");
+                UnexpectedStop(NamedTextColor.RED + "逃亡者不足","逃亡者人數不足導致遊戲無法正常進行，已強制結束");
 
                 Stop();
             }

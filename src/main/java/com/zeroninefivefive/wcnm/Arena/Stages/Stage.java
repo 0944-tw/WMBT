@@ -1,8 +1,5 @@
 package com.zeroninefivefive.wcnm.Arena.Stages;
 
-import com.zeroninefivefive.wcnm.Arena.Stages.Activate;
-import com.zeroninefivefive.wcnm.Arena.Stages.Door;
-
 import javax.annotation.Nullable;
 
 public class Stage {
