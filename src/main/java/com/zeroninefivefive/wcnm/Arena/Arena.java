@@ -13,6 +13,7 @@ import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitRunnable;
@@ -61,7 +62,7 @@ public class Arena {
 
 
         this.Stages = MapData.stages;
-
+        this.IsOpeningDoor = false;
 
         Sidebar.title(Component.text("亡命奔逃"));
         Sidebar.line(0, Component.empty());
@@ -113,16 +114,18 @@ public class Arena {
         killers.put(Killer.getUniqueId(), Killer);
         for (Player SKiller : killers.values()) {
             ItemStack sword = new ItemStack(Material.IRON_SWORD);
-            sword.getItemMeta().displayName(Component.text("西瓜刀").color(NamedTextColor.RED));
+            ItemMeta itemMeta = sword.getItemMeta();
+            itemMeta.displayName(Component.text("西瓜刀").color(NamedTextColor.RED));
             ArrayList<Component> lore = new ArrayList<Component>();
             lore.add(Component.text("拼夕夕上面9.99包郵的西瓜刀"));
             lore.add(Component.text("看起來十分銳利，實際上它一點也不銳利"));
             lore.add(Component.text("美國製造 中國生產"));
-            sword.getItemMeta().lore(lore);
+            itemMeta.lore(lore);
+
             sword.addEnchantment(Enchantment.SHARPNESS, 3);
             SKiller.give(sword);
             SKiller.addPotionEffect(new PotionEffect(PotionEffectType.REGENERATION, PotionEffect.INFINITE_DURATION, 255));
-            SKiller.teleport(Map_KillerSpawn.spawn.getBukkitLocation(null));
+            SKiller.teleport(Map_KillerSpawn.spawn.getBukkitLocation(ArenaWorld));
         }
 
         for (Player SelectedSurvivor : survivors.values()) {
@@ -135,13 +138,14 @@ public class Arena {
                 .appendNewline()
                 .append(Component.text("在時間結束和殺手殺死你們之前逃出去！"));
         broadcastMessageInArena(textComponent);
-
+        this.GameStarted = true;
         // Killer Door
         new BukkitRunnable() {
             int time = 10;
 
             public void run() {
                 if (time <= 0) {
+                    fillBlocks(Map_KillerSpawn.door.start_pos.getBukkitLocation(ArenaWorld),Map_KillerSpawn.door.end_pos.getBukkitLocation(ArenaWorld),Material.AIR);
                     cancel();
                 }
                 broadcastMessageInArena(Component.text("殺手將在 " + time + " 秒後被釋出！"));
@@ -172,6 +176,21 @@ public class Arena {
         }.runTaskTimer(plugin, 0L, 20L); // 20 ticks = 1 second
     }
 
+    // Utility
+    private void fillBlocks(Location Location1, Location Location2, Material TargetMaterial) {
+        for (int x =  Math.min(Location1.getBlockX(), Location2.getBlockX()); x <= Math.max(Location1.getBlockX(), Location2.getBlockX()); x++) {
+            for (int y =   Math.min(Location1.getBlockY(),Location2.getBlockY()); y <= Math.max(Location1.getBlockY(),Location2.getBlockY()); y++) {
+                for (int z =   Math.min(Location1.getBlockZ(),Location2.getBlockZ()); z <= Math.max(Location1.getBlockZ(),Location2.getBlockZ()); z++) {
+                    if (TargetMaterial == Material.AIR) {
+                        ArenaWorld.getBlockAt(x, y, z).breakNaturally(true);
+                    } else {
+                        ArenaWorld.getBlockAt(x, y, z).setType(TargetMaterial);
+                    }
+                }
+            }
+        }
+    }
+    // Broadcast
     public void broadcastMessageInArena(Component Content) {
         for (Player player : ArenaWorld.getPlayers()) {
             player.sendMessage(Content);
@@ -184,6 +203,7 @@ public class Arena {
         }
     }
 
+    // Broadcast
     public void ActivateDoor(PlayerInteractEvent event) {
         Stage StageData = Stages.get(this.CurrentStage);
         if (Stages.get(this.CurrentStage) == null) return;
@@ -207,25 +227,18 @@ public class Arena {
 
                 public void run() {
                     if (time < 0) {
-                        broadcastMessageInArena(Component.text("大門[" + CurrentStage + "] 成功開啟").color(NamedTextColor.GREEN));
-                        Position StartDoorPos = StageData.door.start_pos;
-                        Position EndDoorPos = StageData.door.end_pos;
-                        int startX = ((Number) StartDoorPos.x).intValue();
-                        int endX = ((Number) EndDoorPos.x).intValue();
-                        int startY = ((Number) StartDoorPos.y).intValue();
-                        int endY = ((Number) EndDoorPos.y).intValue();
-                        int startZ = ((Number) StartDoorPos.z).intValue();
-                        int endZ = ((Number) EndDoorPos.z).intValue();
-                        for (int x = Math.min(startX, endX); x <= Math.max(startX, endX); x++) {
-                            for (int y = Math.min(startY, endY); y <= Math.max(startY, endY); y++) {
-                                for (int z = Math.min(startZ, endZ); z <= Math.max(startZ, endZ); z++) {
-                                    ArenaWorld.getBlockAt(x, y, z).setType(Material.AIR);
-                                }
-                            }
+                        if (StageData.door != null) {
+                            broadcastMessageInArena(Component.text("大門[" + CurrentStage + "] 成功開啟").color(NamedTextColor.GREEN));
+                            Position StartDoorPos = StageData.door.start_pos;
+                            Position EndDoorPos = StageData.door.end_pos;
+                            fillBlocks(StartDoorPos.getBukkitLocation(ArenaWorld),EndDoorPos.getBukkitLocation(ArenaWorld),Material.AIR);
+                        }
+                        if (CurrentStage >= Stages.size()) {
+                                broadcastMessageInArena(Component.text("逃生者獲勝！").color(NamedTextColor.GREEN));
                         }
                         IsOpeningDoor = false;
                         CurrentStage += 1;
-                         cancel();
+                        cancel();
                     }
                     if (time % 5 == 0) {
                         broadcastMessageInArena(Component.text("大門[" + CurrentStage + "] ").color(NamedTextColor.YELLOW).append(Component.text(time).color(NamedTextColor.RED)).append(Component.text(" 秒後開啟")).color(NamedTextColor.YELLOW));
