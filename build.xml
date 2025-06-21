@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="CopyPlugin" default="copy-plugin" basedir=".">
+
+    <property name="plugin.jar" value="target/WMBT-1.0.jar" />
+    <property name="server.plugins.dir" value="/home/ikun/Documents/Minecraft Test/plugins" />
+
+    <target name="copy-plugin">
+        <echo message="Copying plugin to server..." />
+        <copy file="${plugin.jar}" todir="${server.plugins.dir}" overwrite="true" />
+    </target>
+
+</project>
