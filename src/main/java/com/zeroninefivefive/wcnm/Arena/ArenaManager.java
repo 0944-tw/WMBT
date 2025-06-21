@@ -62,7 +62,7 @@ public class ArenaManager {
         plugin.getLogger().info("Game Instance Created With ID: " + gameLobbyId);
         // Need to Jackson |
         ObjectMapper mapper = new ObjectMapper();
-        List<Map<String, Object>> rawGameMaps = (List<Map<String, Object>>) config.getList("maps")
+        List<Map<String, Object>> rawGameMaps = (List<Map<String, Object>>) config.getList("maps");
         List<GameMap> parsedStages = new ArrayList<>();
 
         for (Map<String, Object> map : rawGameMaps) {
