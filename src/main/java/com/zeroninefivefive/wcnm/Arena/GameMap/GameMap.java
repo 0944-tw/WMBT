@@ -1,4 +1,7 @@
-package com.zeroninefivefive.wcnm.Arena.Stages;
+package com.zeroninefivefive.wcnm.Arena.GameMap;
+
+import com.zeroninefivefive.wcnm.Arena.GameMap.Stage.KillerSpawn;
+import com.zeroninefivefive.wcnm.Arena.GameMap.Stage.Stage;
 
 import java.util.List;
 

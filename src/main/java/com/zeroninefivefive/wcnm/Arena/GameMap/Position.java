@@ -1,4 +1,4 @@
-package com.zeroninefivefive.wcnm.Arena.Stages;
+package com.zeroninefivefive.wcnm.Arena.GameMap;
 
 import org.bukkit.Location;
 import org.bukkit.World;

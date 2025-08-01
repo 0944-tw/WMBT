@@ -1,4 +1,4 @@
-package com.zeroninefivefive.wcnm.Arena.Stages;
+package com.zeroninefivefive.wcnm.Arena.GameMap.Stage;
 
 import javax.annotation.Nullable;
 
