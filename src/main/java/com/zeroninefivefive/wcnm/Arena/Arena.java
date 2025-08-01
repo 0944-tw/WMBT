@@ -1,12 +1,15 @@
 package com.zeroninefivefive.wcnm.Arena;
 
-import com.zeroninefivefive.wcnm.Arena.Stages.*;
+import com.zeroninefivefive.wcnm.Arena.GameMap.*;
+import com.zeroninefivefive.wcnm.Arena.GameMap.Stage.KillerSpawn;
+import com.zeroninefivefive.wcnm.Arena.GameMap.Stage.Stage;
 import com.zeroninefivefive.wcnm.Main;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextComponent;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextColor;
 import net.kyori.adventure.text.format.TextDecoration;
+import net.kyori.adventure.title.Title;
 import net.megavex.scoreboardlibrary.api.sidebar.Sidebar;
 import org.bukkit.*;
 import org.bukkit.enchantments.Enchantment;
@@ -203,6 +206,12 @@ public class Arena {
         }
     }
 
+    public void broadcastTitleInArena(Title Content) {
+        for (Player player : ArenaWorld.getPlayers()) {
+            player.showTitle(Content);
+        }
+    }
+
     // Broadcast
     public void ActivateDoor(PlayerInteractEvent event) {
         Stage StageData = Stages.get(this.CurrentStage);
@@ -235,6 +244,8 @@ public class Arena {
                         }
                         if (CurrentStage >= Stages.size()) {
                                 broadcastMessageInArena(Component.text("逃生者獲勝！").color(NamedTextColor.GREEN));
+                                broadcastTitleInArena(Title.title(Component.text("殺手獲勝"),Component.text("遊戲結束")));
+                                Stop();
                         }
                         IsOpeningDoor = false;
                         CurrentStage += 1;
@@ -261,6 +272,7 @@ public class Arena {
         spectators.put(Survivor.getUniqueId(), Survivor);
         survivors.remove(Survivor.getUniqueId());
         if (survivors.isEmpty()) {
+            broadcastTitleInArena(Title.title(Component.text("殺手獲勝"),Component.text("遊戲結束")));
             // Killer Wins
             broadcastActionbarInArena(Component.text("殺手獲勝！"));
             this.Stop();
