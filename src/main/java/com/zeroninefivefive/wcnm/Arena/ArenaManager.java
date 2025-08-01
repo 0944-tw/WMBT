@@ -1,11 +1,10 @@
 package com.zeroninefivefive.wcnm.Arena;
 
   import com.fasterxml.jackson.databind.ObjectMapper;
-  import com.zeroninefivefive.wcnm.Arena.Stages.GameMap;
-  import com.zeroninefivefive.wcnm.Arena.Stages.Position;
+  import com.zeroninefivefive.wcnm.Arena.GameMap.GameMap;
+  import com.zeroninefivefive.wcnm.Arena.GameMap.Position;
   import com.zeroninefivefive.wcnm.Main;
-  import org.bukkit.Location;
- import org.bukkit.configuration.file.YamlConfiguration;
+  import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
   import org.mvplugins.multiverse.core.MultiverseCoreApi;
  import org.mvplugins.multiverse.core.utils.result.Attempt;
@@ -94,6 +93,9 @@ public class ArenaManager {
         return gameLobbyId;
     }
 
+    public List<Arena> GetArenaLists(){
+        return new ArrayList<Arena>(LobbyLists.values());
+    }
     public void StopGame(String LobbyId) {
         Arena SArena = LobbyLists.get(LobbyId);
         if (SArena == null) {
@@ -101,6 +103,7 @@ public class ArenaManager {
         }
         SArena.Stop();
     }
+
     public void JoinGame(Player Player, String LobbyId) {
         MultiverseCoreApi coreApi = MultiverseCoreApi.get();
         WorldManager worldManager = coreApi.getWorldManager();
