@@ -3,8 +3,10 @@ package com.zeroninefivefive.wcnm;
 import com.mojang.brigadier.Command;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
+import com.mojang.brigadier.context.CommandContext;
 import com.zeroninefivefive.wcnm.Arena.ArenaEvents;
 import com.zeroninefivefive.wcnm.Arena.ArenaManager;
+import com.zeroninefivefive.wcnm.Handler.JoinCommandHandler;
 import io.papermc.paper.command.brigadier.CommandSourceStack;
 import io.papermc.paper.command.brigadier.Commands;
 import io.papermc.paper.command.brigadier.argument.ArgumentTypes;
@@ -38,6 +40,10 @@ public final class Main extends JavaPlugin {
     public void onEnable() {
         // Welcome to OSU
         saveResource("eh_maps.yml", /* replace */ false);
+        saveResource("eh_roles.yml", /* replace */ false);
+
+        saveResource("eh_strings.yml", /* replace */ false);
+
         File dataFolder = new File(getDataFolder(), "maps");
         this.arenaManager = new ArenaManager(this);
 
@@ -81,37 +87,16 @@ public final class Main extends JavaPlugin {
                         }
                         return Command.SINGLE_SUCCESS;
                     });
-
-            LiteralArgumentBuilder<CommandSourceStack> GameJoin = Commands.literal("join")
-                    .then(Commands.argument("lobby", StringArgumentType.string()))
-                    .then(Commands.argument("players", ArgumentTypes.players()))
-                    .executes(ctx -> {
-                        final PlayerSelectorArgumentResolver targetResolver = ctx.getArgument("players", PlayerSelectorArgumentResolver.class);
-                        final List<Player> targets = targetResolver.resolve(ctx.getSource());
-                        String ArenaUUID = ctx.getArgument("lobby", String.class);
-                        if (targets.size() > 1 & !ctx.getSource().getSender().isOp()) {
-                            ctx.getSource().getSender().sendMessage("go die!!! you are not op!!!!!! you cant do this you stupid im going to ban you!!!!");
-                            return Command.SINGLE_SUCCESS;
-                        }
-                        if (!targets.isEmpty()) {
-                            ctx.getSource().getSender().sendMessage(Component.text("Players missing.").color(NamedTextColor.RED));
-                            return Command.SINGLE_SUCCESS;
-                        }
-                        if (arenaManager.GetArenaFromWorldUUID(ArenaUUID) != null) {
-                            targets.forEach( player -> {
-                                player.sendMessage(Component.text("Teleporting you to ").color(NamedTextColor.YELLOW).append(Component.text()));
-                                arenaManager.JoinGame(player, ctx.getArgument("lobby", String.class));
-                            });
-                        } else {
-                            ctx.getSource().getSender().sendMessage(Component.text("Server not exists!").color(NamedTextColor.RED));
-                        }
-
-                         return Command.SINGLE_SUCCESS;
-                    });
+            LiteralArgumentBuilder<CommandSourceStack> join = Commands.literal("join")
+                    .then(Commands.argument("lobby", StringArgumentType.string())
+                            .then(Commands.argument("players", ArgumentTypes.players())
+                                    .executes(ctx -> {
+                                        return JoinCommandHandler.execute(ctx,this);
+                                    })));
 
 
             command.registrar().register(startgame_cmd.build());
-            command.registrar().register(GameJoin.build());
+            command.registrar().register(join.build());
         });
     }
 
