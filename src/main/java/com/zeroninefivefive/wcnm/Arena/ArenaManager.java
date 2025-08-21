@@ -44,7 +44,7 @@ public class ArenaManager {
     }
 
     public Arena GetArenaFromWorldUUID (String UUID) {
-        return LobbyLists.get(WorldUUID_to_ArenaUUID.get(UUID));
+        return LobbyLists.get(UUID);
     }
 
     public String CreateGameLobby(@Nullable String Map) throws IOException {
